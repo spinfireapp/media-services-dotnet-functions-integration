@@ -106,6 +106,7 @@ public static async Task<object> Run(HttpRequestMessage req, TraceWriter log, Mi
         TimeSpan ts = new TimeSpan(4, 0, 0);
         newProgram = await channel.Programs.CreateAsync($"program-{channelName}", ts, newAsset.Id);
         log.Info("program created.");
+        var publishurlsmooth = GetValidOnDemandURI(newAsset);
         await newProgram.StartAsync();
         log.Info("program started.");
 
@@ -123,7 +124,8 @@ public static async Task<object> Run(HttpRequestMessage req, TraceWriter log, Mi
     return req.CreateResponse(HttpStatusCode.OK, new
     {
         assetId = newAsset.Id,
-        programId = newProgram.Id
+        programId = newProgram.Id,
+        smoothUrl = publishurlsmooth.ToString()
     });
 }
 
