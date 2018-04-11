@@ -9,8 +9,8 @@ Input:
 
 Output:
 {
-    "ingestUrl" : "The ingest URL for the channel.",
-    "channelId" : "The AMS assigned Id for the channel."
+    "assetID" : "The output Asset of the program",
+    "programID" : "the Program ID"
 }
 
 */
@@ -76,7 +76,8 @@ public static async Task<object> Run(HttpRequestMessage req, TraceWriter log, Mi
 
     log.Info($"Using Azure Media Service Rest API Endpoint : {_RESTAPIEndpoint}");
 
-
+    IAsset newAsset = null;
+    IProgram newProgram = null;
 
     try
     {
@@ -91,10 +92,10 @@ public static async Task<object> Run(HttpRequestMessage req, TraceWriter log, Mi
         log.Info("Context object created.");
 
         IChannel channel = _context.Channels.Where(c => c.Name == channelName).FirstOrDefault();
-        IAsset newAsset = await _context.Assets.CreateAsync($"asset-{channelName}", AssetCreationOptions.None, CancellationToken.None);
+        newAsset = await _context.Assets.CreateAsync($"asset-{channelName}", AssetCreationOptions.None, CancellationToken.None);
         log.Info("Asset created.");
         TimeSpan ts = new TimeSpan(4, 0, 0);
-        IProgram newProgram = await channel.Programs.CreateAsync($"program-{channelName}", ts, ass.Id);
+        newProgram = await channel.Programs.CreateAsync($"program-{channelName}", ts, newAsset.Id);
         log.Info("program created.");
         await newProgram.StartAsync();
         log.Info("program started.");
@@ -112,53 +113,12 @@ public static async Task<object> Run(HttpRequestMessage req, TraceWriter log, Mi
 
     return req.CreateResponse(HttpStatusCode.OK, new
     {
-        channelId = newChannel.Id,
-        ingestUrl = newChannel.Input.Endpoints[0].Url.AbsoluteUri
+        assetId = newAsset.Id,
+        programId = newProgram.Id
     });
 }
 
-private static ChannelInput CreateChannelInput()
-{
-    return new ChannelInput
-    {
-        StreamingProtocol = StreamingProtocol.RTMP,
-        AccessControl = new ChannelAccessControl
-        {
-            IPAllowList = new List<IPRange>
-                    {
-                    new IPRange
-                    {
-                    Name = "TestChannelInput001",
-                    // Setting 0.0.0.0 for Address and 0 for SubnetPrefixLength
-                    // will allow access to IP addresses.
-                    Address = IPAddress.Parse("0.0.0.0"),
-                    SubnetPrefixLength = 0
-                    }
-                }
-        }
-    };
-}
 
-private static ChannelPreview CreateChannelPreview()
-{
-    return new ChannelPreview
-    {
-        AccessControl = new ChannelAccessControl
-        {
-            IPAllowList = new List<IPRange>
-                {
-                    new IPRange
-                    {
-                    Name = "TestChannelPreview001",
-                    // Setting 0.0.0.0 for Address and 0 for SubnetPrefixLength
-                    // will allow access to IP addresses.
-                    Address = IPAddress.Parse("0.0.0.0"),
-                    SubnetPrefixLength = 0
-                    }
-                }
-        }
-    };
-}
 
 
 
