@@ -92,11 +92,9 @@ public static async Task<object> Run(HttpRequestMessage req, TraceWriter log, Mi
 
         ChannelCreationOptions myChannelCreationOptions = new ChannelCreationOptions();
         myChannelCreationOptions.Name = channelName;
-        myChannelCreationOptions.Input = new ChannelInput
-        {
-            StreamingProtocol = StreamingProtocol.RTMP,
-            AccessControl = new ChannelAccessControl()
-        };
+        myChannelCreationOptions.Input = CreateChannelInput();
+        myChannelCreationOptions.Preview = CreateChannelPreview();
+
 
         newChannel = await _context.Channels.CreateAsync(myChannelCreationOptions);
 
@@ -118,6 +116,49 @@ public static async Task<object> Run(HttpRequestMessage req, TraceWriter log, Mi
         channelId = newChannel.Id,
         ingestUrl = newChannel.Input.Endpoints[0].Url.AbsoluteUri
     });
+}
+
+private static ChannelInput CreateChannelInput()
+{
+    return new ChannelInput
+    {
+        StreamingProtocol = StreamingProtocol.RTMP,
+        AccessControl = new ChannelAccessControl
+        {
+            IPAllowList = new List<IPRange>
+                    {
+                    new IPRange
+                    {
+                    Name = "TestChannelInput001",
+                    // Setting 0.0.0.0 for Address and 0 for SubnetPrefixLength
+                    // will allow access to IP addresses.
+                    Address = IPAddress.Parse("0.0.0.0"),
+                    SubnetPrefixLength = 0
+                    }
+                }
+        }
+    };
+}
+
+private static ChannelPreview CreateChannelPreview()
+{
+    return new ChannelPreview
+    {
+        AccessControl = new ChannelAccessControl
+        {
+            IPAllowList = new List<IPRange>
+                {
+                    new IPRange
+                    {
+                    Name = "TestChannelPreview001",
+                    // Setting 0.0.0.0 for Address and 0 for SubnetPrefixLength
+                    // will allow access to IP addresses.
+                    Address = IPAddress.Parse("0.0.0.0"),
+                    SubnetPrefixLength = 0
+                    }
+                }
+        }
+    };
 }
 
 
