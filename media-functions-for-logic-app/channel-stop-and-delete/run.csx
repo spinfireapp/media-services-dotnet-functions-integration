@@ -3,14 +3,13 @@ This function creates an program with the name specified and starts it.
 
 Input:
 {
-    "name" : "the name of the program",
+    "name" : "the name of the channel",
 
 }
 
 Output:
 {
-    "assetID" : "The output Asset of the program",
-    "programID" : "the Program ID"
+
 }
 
 */
@@ -72,12 +71,11 @@ public static async Task<object> Run(HttpRequestMessage req, TraceWriter log, Mi
         });
     }
 
-    string programName = data.name;
+    string channelName = data.name;
 
     log.Info($"Using Azure Media Service Rest API Endpoint : {_RESTAPIEndpoint}");
 
-    IProgram program = null;
-
+    IChannel channel = null;
     try
     {
         AzureAdTokenCredentials tokenCredentials = new AzureAdTokenCredentials(_AADTenantDomain,
@@ -91,12 +89,12 @@ public static async Task<object> Run(HttpRequestMessage req, TraceWriter log, Mi
         log.Info("Context object created.");
 
 
-        program = _context.Programs.Where(p => p.Name == $"program-{programName}").FirstOrDefault();
-        log.Info("Program found.");
-        await program.StopAsync();
-        log.Info("Program stopped.");
-        await program.DeleteAsync();
-        log.Info("Program deleted.");
+        channel = _context.Channels.Where(c => c.Name == channelName).FirstOrDefault();
+        log.Info("Channel found.");
+        await channel.StopAsync();
+        log.Info("Channel stopped.");
+        await channel.DeleteAsync();
+        log.Info("Channel deleted.");
     }
     catch (Exception ex)
     {
@@ -110,7 +108,8 @@ public static async Task<object> Run(HttpRequestMessage req, TraceWriter log, Mi
 
     return req.CreateResponse(HttpStatusCode.OK, new
     {
-        programId = program.Id
+        channelId = channel.Id,
+
     });
 }
 
