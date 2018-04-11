@@ -78,7 +78,7 @@ public static async Task<object> Run(HttpRequestMessage req, TraceWriter log, Mi
 
     IAsset newAsset = null;
     IProgram newProgram = null;
-
+    Uri publishurlsmooth = null;
     try
     {
         AzureAdTokenCredentials tokenCredentials = new AzureAdTokenCredentials(_AADTenantDomain,
@@ -106,7 +106,7 @@ public static async Task<object> Run(HttpRequestMessage req, TraceWriter log, Mi
         TimeSpan ts = new TimeSpan(4, 0, 0);
         newProgram = await channel.Programs.CreateAsync($"program-{channelName}", ts, newAsset.Id);
         log.Info("program created.");
-        var publishurlsmooth = GetValidOnDemandURI(newAsset);
+        publishurlsmooth = GetValidOnDemandURI(newAsset);
         await newProgram.StartAsync();
         log.Info("program started.");
 
