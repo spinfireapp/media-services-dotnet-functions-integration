@@ -94,7 +94,8 @@ public static async Task<object> Run(HttpRequestMessage req, TraceWriter log, Mi
         myChannelCreationOptions.Name = channelName;
         myChannelCreationOptions.Input = new ChannelInput
         {
-            StreamingProtocol = StreamingProtocol.RTMP
+            StreamingProtocol = StreamingProtocol.RTMP,
+            AccessControl = new ChannelAccessControl()
         };
 
         newChannel = await _context.Channels.CreateAsync(myChannelCreationOptions);
