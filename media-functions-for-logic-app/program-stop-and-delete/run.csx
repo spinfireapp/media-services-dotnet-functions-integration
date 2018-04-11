@@ -92,6 +92,14 @@ public static async Task<object> Run(HttpRequestMessage req, TraceWriter log, Mi
 
 
         program = _context.Programs.Where(p => p.Name == $"program-{programName}").FirstOrDefault();
+
+        if (program == null)
+        {
+            return req.CreateResponse(HttpStatusCode.NotFound, new
+            {
+                Error = "Program not found";
+            });
+        }
         log.Info("Program found.");
         await program.StopAsync();
         log.Info("Program stopped.");
