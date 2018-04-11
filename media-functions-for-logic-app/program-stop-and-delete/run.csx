@@ -72,7 +72,7 @@ public static async Task<object> Run(HttpRequestMessage req, TraceWriter log, Mi
         });
     }
 
-    string channelName = data.name;
+    string programName = data.name;
 
     log.Info($"Using Azure Media Service Rest API Endpoint : {_RESTAPIEndpoint}");
 
@@ -92,7 +92,7 @@ public static async Task<object> Run(HttpRequestMessage req, TraceWriter log, Mi
         log.Info("Context object created.");
 
 
-        IProgram program = _context.Programs.Where(p => p.Name == "program").FirstOrDefault();
+        IProgram program = _context.Programs.Where(p => p.Name == $"program-{programName}").FirstOrDefault();
         await program.StopAsync();
         await program.DeleteAsync();
 
