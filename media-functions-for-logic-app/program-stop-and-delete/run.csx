@@ -95,6 +95,7 @@ public static async Task<object> Run(HttpRequestMessage req, TraceWriter log, Mi
 
         if (program == null)
         {
+            log.Info("Program not found.  Terminating.");
             return req.CreateResponse(HttpStatusCode.NotFound, new
             {
                 Error = "Program not found"
