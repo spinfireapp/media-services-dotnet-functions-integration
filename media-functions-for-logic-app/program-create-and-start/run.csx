@@ -10,7 +10,8 @@ Input:
 Output:
 {
     "assetID" : "The output Asset of the program",
-    "programID" : "the Program ID"
+    "programID" : "the Program ID",
+    "smoothUrl" : "Base Url of the manifest (NO HLS or DASH suffixes) "
 }
 
 */
