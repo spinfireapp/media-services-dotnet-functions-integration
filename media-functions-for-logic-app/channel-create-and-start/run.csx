@@ -97,8 +97,9 @@ public static async Task<object> Run(HttpRequestMessage req, TraceWriter log, Mi
 
 
         newChannel = await _context.Channels.CreateAsync(myChannelCreationOptions);
-
         log.Info("new channel created.");
+        await newChannel.StartAsync();
+        log.Info("channel started.");
 
     }
     catch (Exception ex)
