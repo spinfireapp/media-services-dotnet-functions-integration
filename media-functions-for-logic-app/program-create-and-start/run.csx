@@ -94,6 +94,15 @@ public static async Task<object> Run(HttpRequestMessage req, TraceWriter log, Mi
         IChannel channel = _context.Channels.Where(c => c.Name == channelName).FirstOrDefault();
         newAsset = await _context.Assets.CreateAsync($"asset-{channelName}", AssetCreationOptions.None, CancellationToken.None);
         log.Info("Asset created.");
+
+        IAccessPolicy policy = _context.AccessPolicies.Create("Streaming policy",
+             TimeSpan.FromDays(365),
+             AccessPermissions.Read);
+
+        // Create an OnDemandOrigin locator to the asset. 
+        ILocator originLocator = _context.Locators.CreateLocator(LocatorType.OnDemandOrigin, newAsset,
+            policy,
+            DateTime.UtcNow.AddMinutes(-5));
         TimeSpan ts = new TimeSpan(4, 0, 0);
         newProgram = await channel.Programs.CreateAsync($"program-{channelName}", ts, newAsset.Id);
         log.Info("program created.");

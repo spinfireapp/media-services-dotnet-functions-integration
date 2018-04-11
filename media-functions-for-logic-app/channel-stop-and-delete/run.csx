@@ -90,7 +90,7 @@ public static async Task<object> Run(HttpRequestMessage req, TraceWriter log, Mi
 
 
         channel = _context.Channels.Where(c => c.Name == channelName).FirstOrDefault();
-
+        
         if (channel==null)
         {
             log.Info($"Channel not found");
